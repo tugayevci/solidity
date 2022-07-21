@@ -24,7 +24,9 @@ export default function Home() {
   };
 
   const setNameOnContract = async () => {
-    const result = await contract.changeName(name);
+    const result = await contract.changeName(name, {
+      value: ethers.utils.parseEther("0.05"),
+    });
     await result.wait();
     console.log(result);
     getNameFromContract();

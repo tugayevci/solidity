@@ -11,7 +11,8 @@ contract MyContract {
         name = _name;
     }
 
-    function changeName(string memory _name) public {
+    function changeName(string memory _name) public payable {
+        require(msg.value >= 0.05 ether, "Need to pay up!");
         name = _name;
         emit ChangeName(msg.sender, _name);
     }
