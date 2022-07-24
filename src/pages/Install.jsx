@@ -1,10 +1,17 @@
+import metamask from "../assets/metamask.png";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+
 const Install = () => {
-    return (
-      <div>
-        <h3>Follow the link to install 👇🏼</h3>
-        <a href="https://metamask.io/download.html">Meta Mask</a>
-      </div>
-    );
-  };
-  
+  return (
+    <Col md="auto">
+      <img src={metamask} width={250}></img>
+      <h3>Follow the link to install 👇🏼</h3>
+      <a target={"_blank"} href="https://metamask.io/download.html">
+        MetaMask
+      </a>
+    </Col>
+  );
+};
+
 export default Install;

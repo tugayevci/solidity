@@ -1,5 +1,6 @@
 import WalletBalance from "../components/WalletBalance";
 import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
 
 import { ethers } from "ethers";
 import MyContract from "../artifacts/contracts/MyContract.sol/MyContract.json";
@@ -17,6 +18,7 @@ const contract = new ethers.Contract(contractAddress, MyContract.abi, signer);
 export default function Home() {
   const [name, setName] = useState("");
   const [contractName, setContractName] = useState("");
+  const [account, setAccount] = useState(null);
 
   const getNameFromContract = async () => {
     const result = await contract.getName();
@@ -41,17 +43,41 @@ export default function Home() {
       });
   }, [contract]);
 
+  useEffect(() => {
+    connectMetamask();
+  }, []);
+
+  const connectMetamask = async () => {
+    const [account] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    console.log("account", account);
+
+    if (account) setAccount(account);
+  };
+
+  if (!account) {
+    return (
+      <div>
+        <h3>Connect your Metamask Wallet to use Dapp</h3>
+        <Button onClick={() => connectMetamask()} variant="primary">
+          Connect
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div>
       <WalletBalance />
 
-      <input value={name} onChange={(e) => setName(e.target.value)}></input>
+      {/* <input value={name} onChange={(e) => setName(e.target.value)}></input>
 
       <button onClick={() => setNameOnContract()}>Set Name</button>
 
       <button onClick={() => getNameFromContract()}>Get Name</button>
 
-      <h2>Name: {contractName}</h2>
+      <h2>Name: {contractName}</h2> */}
     </div>
   );
 }
