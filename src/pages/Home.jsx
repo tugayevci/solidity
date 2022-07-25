@@ -6,7 +6,7 @@ import { ethers } from "ethers";
 import MyContract from "../artifacts/contracts/MyContract.sol/MyContract.json";
 
 export default function Home() {
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0xe247c7bA0339E09351783e69a6BB44ef400CF65e";
 
   const provider = ethers && new ethers.providers.Web3Provider(window.ethereum);
 
@@ -42,6 +42,7 @@ export default function Home() {
         if (error) console.log("Error: " + error);
         else console.log("Log data: " + data);
       });
+    getNameFromContract();
   }, [contract]);
 
   useEffect(() => {
@@ -76,9 +77,9 @@ export default function Home() {
 
       <button onClick={() => setNameOnContract()}>Set Name</button>
 
-      <button onClick={() => getNameFromContract()}>Get Name</button>
+      <button onClick={() => getNameFromContract()}>Get Name</button>*/}
 
-      <h2>Name: {contractName}</h2> */}
+      <h2>Name: {contractName}</h2>
     </div>
   );
 }
