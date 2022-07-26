@@ -7,7 +7,8 @@ import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
 import Navbar from "./components/Navbar";
 import AccountContext from "./hooks/accountContext";
-
+import Toast from "react-bootstrap/Toast";
+import ToastContainer from "react-bootstrap/ToastContainer";
 import { ethers } from "ethers";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,6 +17,8 @@ function App() {
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
   const [wrongNetwork, setWrongNetwork] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     getProvider();
@@ -69,7 +72,7 @@ function App() {
       wrongNetwork,
       setWrongNetwork,
       connectMetamask,
-      contractAddress: "0x1b3F94C06F0e48cE12e88202493c2dd481715437",
+      contractAddress: "0x8DE3588659256e0D93cE0fC785B00C79E03fE5C4",
     }),
     [account, provider, wrongNetwork, connectMetamask]
   );
@@ -77,7 +80,9 @@ function App() {
   let renderComponent = <></>;
 
   if (window.ethereum) {
-    renderComponent = <Home />;
+    renderComponent = (
+      <Home setError={setError} setErrorMessage={setErrorMessage} />
+    );
   } else {
     renderComponent = <Install />;
   }
@@ -94,6 +99,19 @@ function App() {
     <>
       <AccountContext.Provider value={value}>
         <Navbar />
+        <ToastContainer position="bottom-end" containerPosition="fixed">
+          <Toast
+            onClose={() => setError(false)}
+            show={error}
+            className="d-inline-block m-1"
+            bg={"danger"}
+          >
+            <Toast.Header>
+              <strong className="me-auto">Error</strong>
+            </Toast.Header>
+            <Toast.Body>{errorMessage || "Unknown error"}</Toast.Body>
+          </Toast>
+        </ToastContainer>
         <Container>
           <Row className="justify-content-center ">
             <Col>{renderComponent}</Col>

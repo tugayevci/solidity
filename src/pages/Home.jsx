@@ -9,15 +9,13 @@ import NFTCard from "../components/NFTCard";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-export default function Home() {
+export default function Home({ setError, setErrorMessage }) {
   const [nfts, setNfts] = useState([]);
 
   const { account, provider, contractAddress, connectMetamask } =
     useContext(accountContext);
   // get the end user
   const signer = provider && provider.getSigner();
-
-  console.log("contractAddress", contractAddress);
 
   // get the smart contract
   const contract =
@@ -32,22 +30,28 @@ export default function Home() {
   const getNFTs = async () => {
     if (contract) {
       const result = await contract.getNfts();
-      console.log("result", result);
       setNfts(result);
+      return result;
     }
   };
 
   const mintNft = async (id) => {
-    console.log("id", id);
-    const nft = nfts[id];
+    try {
+      const nfts = await getNFTs();
+      const nft = nfts[id];
 
-    if (contract) {
-      const result = await contract.mintNft(id, {
-        value: nft.price,
-      });
-      await result.wait();
-      console.log(result);
-      getNFTs();
+      if (contract) {
+        const result = await contract.mintNft(id, {
+          value: nft.price,
+        });
+        await result.wait();
+        console.log(result);
+        getNFTs();
+      }
+    } catch (err) {
+      console.log("err", err);
+      setError(true);
+      err && err.message && setErrorMessage(err.message);
     }
   };
 
@@ -66,12 +70,14 @@ export default function Home() {
   }
 
   return (
-    <Row>
-      {nfts.map((nft, i) => (
-        <Col key={i} md={4}>
-          <NFTCard nft={nft} mintNft={mintNft} id={i} />
-        </Col>
-      ))}
-    </Row>
+    <>
+      <Row>
+        {nfts.map((nft, i) => (
+          <Col key={i} md={4}>
+            <NFTCard nft={nft} mintNft={mintNft} id={i} />
+          </Col>
+        ))}
+      </Row>
+    </>
   );
 }

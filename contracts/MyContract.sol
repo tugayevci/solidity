@@ -21,7 +21,7 @@ contract MyContract {
                 "Bulbasaur",
                 "There is a plant seed on its back right from the day this Pokemon is born. The seed slowly grows larger",
                 "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png",
-                0.01 ether,
+                0.0001 ether,
                 address(0)
             )
         );
@@ -31,7 +31,7 @@ contract MyContract {
                 "Charmander",
                 "It has a preference for hot things. When it rains, steam is said to spout from the tip of its tail.",
                 "https://assets.pokemon.com/assets/cms2/img/pokedex/full/004.png",
-                0.02 ether,
+                0.002 ether,
                 address(0)
             )
         );
@@ -71,7 +71,7 @@ contract MyContract {
                 "Pikachu",
                 "Pikachu that can generate powerful electricity have cheek sacs that are extra soft and super stretchy.",
                 "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
-                0.5 ether,
+                0.05 ether,
                 address(0)
             )
         );
@@ -80,7 +80,9 @@ contract MyContract {
     function mintNft(uint256 _id) public payable {
         Nft storage nft = nfts[_id];
         require(msg.value >= nft.price, "Need to pay up!");
+        require(msg.sender != nfts[_id].owner, "You already have it!");
         nfts[_id].owner = msg.sender;
+        nfts[_id].price = nfts[_id].price * 2;
     }
 
     function getNfts() public view returns (Nft[] memory) {
