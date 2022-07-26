@@ -5,55 +5,51 @@ import Button from "react-bootstrap/Button";
 import { ethers } from "ethers";
 import MyContract from "../artifacts/contracts/MyContract.sol/MyContract.json";
 import accountContext from "../hooks/accountContext";
+import NFTCard from "../components/NFTCard";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 
 export default function Home() {
-  const { account, connectMetamask } = useContext(accountContext);
+  const [nfts, setNfts] = useState([]);
 
-  const contractAddress = "0xe247c7bA0339E09351783e69a6BB44ef400CF65e";
-
-  const provider = ethers && new ethers.providers.Web3Provider(window.ethereum);
-
+  const { account, provider, contractAddress, connectMetamask } =
+    useContext(accountContext);
   // get the end user
   const signer = provider && provider.getSigner();
 
+  console.log("contractAddress", contractAddress);
+
   // get the smart contract
   const contract =
-    ethers && new ethers.Contract(contractAddress, MyContract.abi, signer);
+    ethers &&
+    contractAddress &&
+    new ethers.Contract(contractAddress, MyContract.abi, signer);
 
-  // const getNameFromContract = async () => {
-  //   const result = await contract.getName();
-  //   setContractName(result);
-  // };
+  useEffect(() => {
+    getNFTs();
+  }, [provider]);
 
-  // const setNameOnContract = async () => {
-  //   const result = await contract.changeName(name, {
-  //     value: ethers.utils.parseEther("0.05"),
-  //   });
-  //   await result.wait();
-  //   console.log(result);
-  //   getNameFromContract();
-  // };
+  const getNFTs = async () => {
+    if (contract) {
+      const result = await contract.getNfts();
+      console.log("result", result);
+      setNfts(result);
+    }
+  };
 
-  // useEffect(() => {
-  //   contract &&
-  //     contract.events &&
-  //     contract.events.ChangeName({}, (error, data) => {
-  //       if (error) console.log("Error: " + error);
-  //       else console.log("Log data: " + data);
-  //     });
-  //   getNameFromContract();
-  // }, [contract]);
+  const mintNft = async (id) => {
+    console.log("id", id);
+    const nft = nfts[id];
 
-  // useEffect(() => {
-  //   connectMetamask();
-  // }, []);
-
-  // const connectMetamask = async () => {
-  //   const [account] = await window.ethereum.request({
-  //     method: "eth_requestAccounts",
-  //   });
-  //   if (account) setAccount(account);
-  // };
+    if (contract) {
+      const result = await contract.mintNft(id, {
+        value: nft.price,
+      });
+      await result.wait();
+      console.log(result);
+      getNFTs();
+    }
+  };
 
   if (!account) {
     return (
@@ -70,14 +66,12 @@ export default function Home() {
   }
 
   return (
-    <div>
-      {/* <input value={name} onChange={(e) => setName(e.target.value)}></input>
-
-      <button onClick={() => setNameOnContract()}>Set Name</button>
-
-      <button onClick={() => getNameFromContract()}>Get Name</button>*/}
-
-      {/* <h2>Name: {contractName}</h2> */}
-    </div>
+    <Row>
+      {nfts.map((nft, i) => (
+        <Col key={i} md={4}>
+          <NFTCard nft={nft} mintNft={mintNft} id={i} />
+        </Col>
+      ))}
+    </Row>
   );
 }

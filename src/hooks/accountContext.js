@@ -7,6 +7,7 @@ const AccountContext = createContext({
   wrongNetwork: false,
   setWrongNetwork: () => {},
   connectMetamask: () => {},
+  contractAddress: "",
 });
 
 export default AccountContext;

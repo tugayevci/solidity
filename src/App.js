@@ -24,8 +24,8 @@ function App() {
       if (window.ethereum) {
         window.ethereum.on("networkChanged", function (networkId) {
           console.log("networkId", networkId);
-          if (networkId != 5) setWrongNetwork(true);
-          else setWrongNetwork(false);
+          if (networkId == 5 || networkId == 31337) setWrongNetwork(false);
+          else setWrongNetwork(true);
         });
       }
     });
@@ -52,8 +52,8 @@ function App() {
   const checkNetwork = async () => {
     if (provider) {
       const { chainId } = await provider.getNetwork();
-      if (chainId !== 5) setWrongNetwork(true);
-      else setWrongNetwork(false);
+      if (chainId == 5 || chainId == 31337) setWrongNetwork(false);
+      else setWrongNetwork(true);
     }
   };
 
@@ -69,6 +69,7 @@ function App() {
       wrongNetwork,
       setWrongNetwork,
       connectMetamask,
+      contractAddress: "0x1b3F94C06F0e48cE12e88202493c2dd481715437",
     }),
     [account, provider, wrongNetwork, connectMetamask]
   );

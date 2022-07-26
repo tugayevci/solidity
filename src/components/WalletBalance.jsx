@@ -9,12 +9,18 @@ function WalletBalance() {
   const { account, provider, wrongNetwork } = useContext(accountContext);
 
   const getBalance = async () => {
-    const balance = await provider.getBalance(account);
-    setBalance(ethers.utils.formatEther(balance));
+    if (account && provider && !wrongNetwork) {
+      const balance = await provider.getBalance(account);
+      setBalance(ethers.utils.formatEther(balance));
+    }
   };
 
   useEffect(() => {
-    if (account && provider && !wrongNetwork) getBalance();
+    const interval = setInterval(() => {
+      getBalance();
+    }, 200);
+
+    return () => clearInterval(interval);
   }, [account, provider, wrongNetwork]);
 
   if (wrongNetwork)
