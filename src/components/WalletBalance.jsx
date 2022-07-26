@@ -1,22 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
 import ether from "../assets/ethereum.png";
+import accountContext from "../hooks/accountContext";
 
 function WalletBalance() {
   const [balance, setBalance] = useState();
 
+  const { account, provider, wrongNetwork } = useContext(accountContext);
+
   const getBalance = async () => {
-    const [account] = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
     const balance = await provider.getBalance(account);
     setBalance(ethers.utils.formatEther(balance));
   };
 
   useEffect(() => {
-    getBalance();
-  }, []);
+    if (account && provider && !wrongNetwork) getBalance();
+  }, [account, provider, wrongNetwork]);
+
+  if (wrongNetwork)
+    return <h6>WRONG NETWORK PLEASE SWITCH TO GOERLI NETWORK</h6>;
+  if (!balance) return <h6>Please connect your Metamask account</h6>;
 
   return (
     <div>
