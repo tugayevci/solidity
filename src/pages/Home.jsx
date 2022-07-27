@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 
 export default function Home({ setError, setErrorMessage }) {
   const [nfts, setNfts] = useState([]);
+  const [isTransaction, setIsTransaction] = useState(false);
 
   const { account, provider, contractAddress, connectMetamask } =
     useContext(accountContext);
@@ -24,7 +25,11 @@ export default function Home({ setError, setErrorMessage }) {
     new ethers.Contract(contractAddress, MyContract.abi, signer);
 
   useEffect(() => {
-    getNFTs();
+    const interval = setInterval(() => {
+      getNFTs();
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [provider]);
 
   const getNFTs = async () => {
@@ -37,6 +42,7 @@ export default function Home({ setError, setErrorMessage }) {
 
   const mintNft = async (id) => {
     try {
+      setIsTransaction(true);
       const nfts = await getNFTs();
       const nft = nfts[id];
 
@@ -52,6 +58,8 @@ export default function Home({ setError, setErrorMessage }) {
       console.log("err", err);
       setError(true);
       err && err.message && setErrorMessage(err.message);
+    } finally {
+      setIsTransaction(false);
     }
   };
 
@@ -74,7 +82,12 @@ export default function Home({ setError, setErrorMessage }) {
       <Row>
         {nfts.map((nft, i) => (
           <Col key={i} md={4}>
-            <NFTCard nft={nft} mintNft={mintNft} id={i} />
+            <NFTCard
+              nft={nft}
+              mintNft={mintNft}
+              id={i}
+              isTransaction={isTransaction}
+            />
           </Col>
         ))}
       </Row>

@@ -4,14 +4,17 @@ import { ethers } from "ethers";
 import ether from "../assets/ethereum.png";
 import accountContext from "../hooks/accountContext";
 import { useContext } from "react";
+import Spinner from "react-bootstrap/Spinner";
 
-function NFTCard({ nft, id, mintNft }) {
+function NFTCard({ nft, id, mintNft, isTransaction }) {
   const { account } = useContext(accountContext);
 
-  const owner =
+  let owner =
     nft.owner === "0x0000000000000000000000000000000000000000"
       ? "None"
       : nft.owner;
+
+  if (owner.toUpperCase() === account.toUpperCase()) owner = "You 🤑";
 
   return (
     <Card style={{ width: "18rem" }}>
@@ -24,8 +27,16 @@ function NFTCard({ nft, id, mintNft }) {
         <Card.Text>{nft.desc}</Card.Text>
         <Card.Text>Owner: {owner}</Card.Text>
         {nft.owner.toUpperCase() !== account.toUpperCase() && (
-          <Button onClick={() => mintNft(id)} variant="primary">
-            Mint
+          <Button
+            disabled={isTransaction}
+            onClick={() => mintNft(id)}
+            variant="primary"
+          >
+            {!isTransaction ? (
+              "Mint"
+            ) : (
+              <Spinner animation="border" role="status"></Spinner>
+            )}
           </Button>
         )}
       </Card.Body>
